@@ -29,6 +29,21 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Function to check Docker Compose (supports both v1 and v2)
+check_docker_compose() {
+    if command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD="docker-compose"
+    elif docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD="docker compose"
+    else
+        return 1
+    fi
+    return 0
+}
+
+# Initialize Docker Compose command
+check_docker_compose
+
 # Change to script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -37,12 +52,12 @@ cd "$PROJECT_DIR"
 print_status "Stopping RAG system services..."
 
 # Stop services
-if docker-compose ps | grep -q "Up"; then
+if $COMPOSE_CMD ps | grep -q "Up"; then
     print_status "Stopping containers..."
-    docker-compose stop
+    $COMPOSE_CMD stop
     
     print_status "Removing containers..."
-    docker-compose down
+    $COMPOSE_CMD down
     
     print_success "RAG system services stopped successfully"
 else
@@ -51,8 +66,8 @@ fi
 
 # Display final status
 print_status "Final status:"
-docker-compose ps
+$COMPOSE_CMD ps
 
 print_success "RAG system shutdown complete"
 print_status "Data volumes are preserved. To completely remove all data, run:"
-print_status "  docker-compose down -v --remove-orphans"
+print_status "  $COMPOSE_CMD down -v --remove-orphans"

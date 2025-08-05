@@ -34,6 +34,18 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+# Function to check Docker Compose (supports both v1 and v2)
+check_docker_compose() {
+    if command_exists docker-compose; then
+        COMPOSE_CMD="docker-compose"
+    elif docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD="docker compose"
+    else
+        return 1
+    fi
+    return 0
+}
+
 # Check prerequisites
 print_status "Checking prerequisites..."
 
@@ -42,7 +54,7 @@ if ! command_exists docker; then
     exit 1
 fi
 
-if ! command_exists docker-compose; then
+if ! check_docker_compose; then
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -96,11 +108,11 @@ print_success "Directories created"
 
 # Pull latest images
 print_status "Pulling latest Docker images..."
-docker-compose pull
+$COMPOSE_CMD pull
 
 # Start services
 print_status "Starting RAG system services..."
-docker-compose up -d
+$COMPOSE_CMD up -d
 
 # Wait for services to be healthy
 print_status "Waiting for services to be healthy..."
@@ -112,7 +124,7 @@ wait_for_service() {
     local attempt=1
     
     while [ $attempt -le $max_attempts ]; do
-        if docker-compose ps | grep "$service_name" | grep -q "healthy\|Up"; then
+        if $COMPOSE_CMD ps | grep "$service_name" | grep -q "healthy\|Up"; then
             print_success "$service_name is ready"
             return 0
         fi
@@ -133,7 +145,7 @@ wait_for_service "rag-nginx"
 
 # Display service status
 print_status "Service Status:"
-docker-compose ps
+$COMPOSE_CMD ps
 
 # Display access information
 print_success "RAG System started successfully!"
@@ -149,4 +161,4 @@ echo "  👤 Username: ${NEO4J_USERNAME:-neo4j}"
 echo "  🔑 Password: ${NEO4J_PASSWORD}"
 echo ""
 print_warning "To stop the system, run: ./scripts/stop.sh"
-print_warning "To view logs, run: docker-compose logs -f [service_name]"
+print_warning "To view logs, run: $COMPOSE_CMD logs -f [service_name]"
