@@ -1,18 +1,31 @@
-# Custom Graphiti image with Neo4j Community edition compatibility fix
+# Custom Graphiti image with Neo4j Community edition compatibility fixes
 FROM zepai/graphiti:latest
 
-# Create backup and apply the vector similarity function fix
+# Create backups and apply fixes
 RUN cp /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py \
        /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py.backup && \
-    sed -i 's/vector\.similarity\.cosine/gds.similarity.cosine/g' \
-       /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py
+    cp /usr/local/lib/python3.12/site-packages/graphiti_core/utils/bulk_utils.py \
+       /usr/local/lib/python3.12/site-packages/graphiti_core/utils/bulk_utils.py.backup
+
+# Fix 1: Vector similarity function compatibility
+RUN sed -i 's/vector\.similarity\.cosine/gds.similarity.cosine/g' \
+    /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py
+
+# Fix 2: Cypher syntax compatibility for Neo4j 5.15
+RUN sed -i 's/SET n:\$(\$labels)//' \
+    /usr/local/lib/python3.12/site-packages/graphiti_core/models/nodes/node_db_queries.py && \
+    sed -i 's/SET n:\$(node\.labels)//' \
+    /usr/local/lib/python3.12/site-packages/graphiti_core/models/nodes/node_db_queries.py
 
 # Verify the changes were applied
 RUN grep -n "gds\.similarity\.cosine" \
-    /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py || \
-    (echo "ERROR: Fix not applied correctly" && exit 1)
+    /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py && \
+    ! grep -n "SET n:\$" \
+    /usr/local/lib/python3.12/site-packages/graphiti_core/models/nodes/node_db_queries.py || \
+    (echo "ERROR: Fixes not applied correctly" && exit 1)
 
 # Add labels for documentation
 LABEL description="Graphiti RAG with Neo4j Community edition compatibility"
-LABEL version="1.0.0"
-LABEL fix="vector.similarity.cosine -> gds.similarity.cosine"
+LABEL version="2.0.0"
+LABEL fix1="vector.similarity.cosine -> gds.similarity.cosine"
+LABEL fix2="Removed incompatible SET n:\$ label syntax for Neo4j 5.15"
