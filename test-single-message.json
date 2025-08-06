@@ -1,0 +1,12 @@
+{
+  "group_id": "debug-test-group",
+  "messages": [
+    {
+      "content": "This is a debug test message for RAG system processing",
+      "role_type": "user",
+      "role": "debug_user",
+      "timestamp": "2025-08-06T14:00:00Z",
+      "source_description": "Debug test for message processing"
+    }
+  ]
+}

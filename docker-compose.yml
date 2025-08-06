@@ -22,7 +22,7 @@ services:
       retries: 3
 
   neo4j:
-    image: neo4j:5.15-community
+    image: neo4j:5.23-community
     container_name: rag-neo4j
     ports:
       - "7474:7474"  # HTTP
@@ -58,7 +58,7 @@ services:
       start_period: 60s
 
   graphiti:
-    image: graphiti-community-fix:latest
+    image: graphiti-fixed:latest
     container_name: rag-graphiti
     ports:
       - "8000:8000"
