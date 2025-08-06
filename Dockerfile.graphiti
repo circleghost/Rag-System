@@ -1,0 +1,18 @@
+# Custom Graphiti image with Neo4j Community edition compatibility fix
+FROM zepai/graphiti:latest
+
+# Create backup and apply the vector similarity function fix
+RUN cp /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py \
+       /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py.backup && \
+    sed -i 's/vector\.similarity\.cosine/gds.similarity.cosine/g' \
+       /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py
+
+# Verify the changes were applied
+RUN grep -n "gds\.similarity\.cosine" \
+    /usr/local/lib/python3.12/site-packages/graphiti_core/search/search_utils.py || \
+    (echo "ERROR: Fix not applied correctly" && exit 1)
+
+# Add labels for documentation
+LABEL description="Graphiti RAG with Neo4j Community edition compatibility"
+LABEL version="1.0.0"
+LABEL fix="vector.similarity.cosine -> gds.similarity.cosine"

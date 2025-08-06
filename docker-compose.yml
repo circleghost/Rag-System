@@ -58,7 +58,7 @@ services:
       start_period: 60s
 
   graphiti:
-    image: zepai/graphiti:latest
+    image: graphiti-community-fix:latest
     container_name: rag-graphiti
     ports:
       - "8000:8000"
