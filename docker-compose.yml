@@ -70,7 +70,7 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - GRAPHITI_HOST=0.0.0.0
       - GRAPHITI_PORT=8000
-      - GRAPHITI_LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - GRAPHITI_LOG_LEVEL=DEBUG
     volumes:
       - graphiti-data:/app/data
       - ./graphiti/config:/app/config

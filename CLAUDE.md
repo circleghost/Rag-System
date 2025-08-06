@@ -1,9 +1,9 @@
-# CLAUDE.md - super8-extension
+# CLAUDE.md - RAG System
 
 > **Documentation Version**: 1.0  
-> **Last Updated**: 2025-07-01  
-> **Project**: super8-extension  
-> **Description**: Chrome Extension for extracting Super8/InsightArk chat conversations and sending data to webhook for processing  
+> **Last Updated**: 2025-08-06  
+> **Project**: RAG System  
+> **Description**: Complete RAG (Retrieval-Augmented Generation) system using Docker Compose with Nginx, Neo4j, and Graphiti for message processing and semantic search  
 > **Features**: GitHub auto-backup, Task agents, technical debt prevention
 
 This file provides essential guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -76,7 +76,7 @@ This file provides essential guidance to Claude Code (claude.ai/code) when worki
 ## 🐙 GITHUB SETUP & AUTO-BACKUP
 
 ### 🔄 **AUTO-PUSH CONFIGURATION**
-Repository: git@github.com:circleghost/super8-extension.git
+Repository: git@github.com:circleghost/Rag-System.git
 
 ```bash
 # After every commit, always run:
@@ -91,13 +91,18 @@ git push origin main
 
 ## 🏗️ PROJECT OVERVIEW
 
-Chrome Extension for extracting Super8/InsightArk chat conversations and sending data to webhook for processing.
+Complete RAG (Retrieval-Augmented Generation) system using Docker Compose with three main services:
+- **Nginx**: Reverse proxy and load balancer
+- **Neo4j**: Graph database with Community edition + GDS plugin
+- **Graphiti**: RAG processing engine with custom Neo4j Community compatibility
 
 ### 🎯 **DEVELOPMENT STATUS**
-- **Setup**: Complete
-- **Core Features**: Pending
-- **Testing**: Pending
-- **Documentation**: Pending
+- **Setup**: Complete ✅
+- **Core Features**: Complete ✅
+- **Neo4j Integration**: Complete ✅
+- **Custom Docker Image**: Complete ✅
+- **Testing**: Complete ✅
+- **Documentation**: Complete ✅
 
 ## 🎯 RULE COMPLIANCE CHECK
 
@@ -111,11 +116,23 @@ Before starting ANY task, verify:
 ## 🚀 COMMON COMMANDS
 
 ```bash
-# Chrome extension development
-npm install
-npm run build
-npm run test
-npm run lint
+# RAG system development
+./scripts/start.sh    # Start all services
+./scripts/stop.sh     # Stop all services
+docker compose ps     # Check service status
+docker compose logs   # View all logs
+
+# Neo4j access
+# Browser: http://localhost:7474
+# Bolt: bolt://localhost:7687
+
+# Graphiti API
+# Docs: http://localhost:8000/docs
+# Health: http://localhost:8000/healthcheck
+
+# Testing
+curl -X POST "http://localhost:8000/messages" -H "Content-Type: application/json" -d @test-messages.json
+curl -X POST "http://localhost:8000/search" -H "Content-Type: application/json" -d '{"query": "test", "max_facts": 10}'
 ```
 
 ## 🔍 LARGE CODEBASE ANALYSIS - GEMINI CLI
