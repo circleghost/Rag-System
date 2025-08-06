@@ -1,4 +1,4 @@
-# Custom Graphiti image with Neo4j Community edition compatibility fixes
+# Custom Graphiti image with Neo4j 2025.06.2 Community edition compatibility fixes
 FROM zepai/graphiti:latest
 
 # Create backups and apply fixes
@@ -25,7 +25,9 @@ RUN grep -n "gds\.similarity\.cosine" \
     (echo "ERROR: Fixes not applied correctly" && exit 1)
 
 # Add labels for documentation
-LABEL description="Graphiti RAG with Neo4j Community edition compatibility"
-LABEL version="2.0.0"
+LABEL description="Graphiti RAG with Neo4j 2025.06.2 Community edition compatibility"
+LABEL version="3.0.0"
 LABEL fix1="vector.similarity.cosine -> gds.similarity.cosine"
-LABEL fix2="Removed incompatible SET n:\$ label syntax for Neo4j 5.15"
+LABEL fix2="Removed incompatible SET n:\$ label syntax for Neo4j 2025.06.2"
+LABEL neo4j_version="2025.06.2-community"
+LABEL graphiti_base="latest"
